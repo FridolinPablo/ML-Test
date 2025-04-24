@@ -4,6 +4,7 @@ from buildTrainData import UserProfileBuilder
 creator = createDataFrame()
 creator.load_all_json('./data/')
 merged_df = creator.create_dataframe()
+creator.save_dataframe(merged_df)
 
 builder = UserProfileBuilder(merged_df)
 train_df = builder.build_profiles()

@@ -49,6 +49,10 @@ class UserProfileBuilder:
 
             # Fragebogen
             q = group[group["source"] == "questionnaire"].copy()
+            # Invertiere negativ formulierte Items vor der Normalisierung
+            inverted_items = ["psi_1", "psi_2", "psi_6", "psi_8", "psi_10", "psi_13", "psi_15", "psi_18"]
+            q["item_id"] = q["item_id"].astype(str)
+            q.loc[q["item_id"].isin(inverted_items), "answers"] = 7 - q["answers"].astype(float)
             q["answers"] = self.normalize_likert(q["answers"].astype(float))
             subscale_means = q.groupby("subscales")["answers"].mean().to_dict()
             questionnaire_score = np.mean([subscale_means.get(k, 0) for k in ["AAS", "PSC", "PC"]])
