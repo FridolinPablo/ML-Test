@@ -58,26 +58,23 @@ class createDataFrame:
         all_data = pd.concat([questionnaire_df, game_df[cols], test_df[cols]], ignore_index=True)
 
         return all_data
-    
-    
+
     def create_dataframe(self):
-        dataframes = []
         if self.data is None:
             raise ValueError("load_json aufrufen. Keine Daten eingelesen")
-        
+
         if isinstance(self.data, list):
-            for d in self.data:
-                dataframes.append(self.create_dataframe_from_file(d))
-            return dataframes
-        
-        dataframes.append(self.create_dataframe_from_file(self.data))
-        return dataframes
-            
-    def save_dataframe(self, dflist, folder_path='./dataframes/'):
-        for i in range(len(dflist)):
-            if not isinstance(dflist[i], pd.DataFrame):
-                raise ValueError("Die Liste enthält kein DataFrame-Objekt.")
-            dflist[i].to_csv(folder_path + str(i) + ".csv", index=False, encoding='utf-8')
-            print(f"DataFrame {i} gespeichert unter {folder_path}")
+            merged_df = pd.concat([self.create_dataframe_from_file(d) for d in self.data], ignore_index=True)
+            return merged_df
+
+        return self.create_dataframe_from_file(self.data)
+
+    def save_dataframe(self, df, file_path='./dataframes/merged.csv'):
+        if not isinstance(df, pd.DataFrame):
+            raise ValueError("Das übergebene Objekt ist kein DataFrame.")
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)  # Erstelle Ordner, falls nicht vorhanden
+        df.to_csv(file_path, index=False, encoding='utf-8')
+        print(f"DataFrame gespeichert unter {file_path}")
+
 
     
